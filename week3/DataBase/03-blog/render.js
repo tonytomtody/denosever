@@ -82,8 +82,9 @@ export function list(posts,user) {
   for (let post of posts) {
     list.push(`
     <li>
-      <h2>${ post.title }</h2>
+      <h2>${post.title }</h2>
       <p>by ${post.user}</p>
+      <p>Create at ${post.timestamp.toLocaleString()}</p>
       <p><a href="/${user}/post/${post.id}/">Read post</a></p>
     </li>
     `)
@@ -150,6 +151,7 @@ export function newPost(user) {
   <form action="/${user}/post/" method="post">
     <p><input type="text" placeholder="Title" name="title"></p>
     <p><textarea placeholder="Contents" name="body"></textarea></p>
+    <p><input type="checkbox" name="privacy" checked>Privacy</p>
     <p><input type="submit" value="Create"></p>
   </form>
   `)
@@ -159,6 +161,7 @@ export function show(post,user) {
   return layout(post.title, `
     <h1>${post.title}</h1>
     <p>Created by ${post.user}</p>
+    <p>Create at ${post.timestamp.toLocaleString()}</p>
     <p>${post.body}</p>
     <p>View as ${user}</p>
   `)

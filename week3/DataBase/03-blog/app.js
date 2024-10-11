@@ -3,8 +3,9 @@ import * as render from './render.js'
 import { DB } from "https://deno.land/x/sqlite/mod.ts";
 
 const db = new DB("blog.db");
-db.query("CREATE TABLE IF NOT EXISTS posts (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, body TEXT, user TEXT)");
+db.query("CREATE TABLE IF NOT EXISTS posts (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, body TEXT, user TEXT, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP, privacy INTEGER DEFAULT 1)");
 //db.query(`INSERT INTO posts (title, body, user) VALUES ('config', 'admin', 'default')`);
+//db.query(`INSERT INTO posts (title, body, user, privacy) VALUES ('Hi', 'Hi', 'admin', 0)`);
 
 const router = new Router();
 
@@ -25,8 +26,8 @@ app.use(router.allowedMethods());
 
 function query(sql) {
   let list = []
-  for (const [id, title, body , user] of db.query(sql)) {
-    list.push({id, title, body , user})
+  for (const [id, title, body , user , timestamp] of db.query(sql)) {
+    list.push({id, title, body , user , timestamp})
   }
   return list
 }
@@ -54,7 +55,7 @@ async function redirectTo(ctx) {
 
 async function list(ctx) {
   const user = ctx.params.user;
-  let posts = query(`SELECT id, title, body, user FROM posts WHERE user = '${user}' AND title != 'config'`)
+  let posts = query(`SELECT id, title, body, user, timestamp FROM posts WHERE (user = '${user}' OR privacy = 0) AND title != 'config'`)
   console.log('list:posts=', posts)
   ctx.response.body = await render.list(posts,user);
 }
@@ -73,7 +74,7 @@ async function add(ctx) {
 async function show(ctx) {
   const user = ctx.params.user;
   const pid = ctx.params.id;
-  let posts = query(`SELECT id, title, body, user FROM posts WHERE id=${pid}`)
+  let posts = query(`SELECT id, title, body, user, timestamp FROM posts WHERE id=${pid}`)
   let post = posts[0]
   console.log('show:post=', post)
   if (!post) ctx.throw(404, 'invalid post id');
@@ -90,7 +91,14 @@ async function create(ctx) {
       post[key] = value
     }
     console.log('create:post=', post)
-    db.query("INSERT INTO posts (title, body, user) VALUES (?, ?, ?)", [post.title, post.body, user]);
+    let pravicy = 1
+    if (post.privacy) {
+      pravicy = 1
+    }
+    else {
+      pravicy = 0
+    }
+    db.query("INSERT INTO posts (title, body, user, privacy) VALUES (?, ?, ?, ?)", [post.title, post.body, user , pravicy]);
     ctx.response.redirect(`/${user}/list/`);
   }
 }
@@ -120,7 +128,7 @@ async function check(ctx) {
   }
 }
 
-async function register(ctx) {
+async function register(ctx) { 
   const body = ctx.request.body;
   if (body.type() === "form") {
     const pairs = await body.form()
