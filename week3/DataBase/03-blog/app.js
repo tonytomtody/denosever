@@ -3,9 +3,9 @@ import * as render from './render.js'
 import { DB } from "https://deno.land/x/sqlite/mod.ts";
 
 const db = new DB("blog.db");
-db.query("CREATE TABLE IF NOT EXISTS posts (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, body TEXT, user TEXT, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP, privacy INTEGER DEFAULT 1)");
+db.query("CREATE TABLE IF NOT EXISTS posts (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, body TEXT, user TEXT, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP, privacy BOOLEAN DEFAULT TRUE)");
 //db.query(`INSERT INTO posts (title, body, user) VALUES ('config', 'admin', 'default')`);
-//db.query(`INSERT INTO posts (title, body, user, privacy) VALUES ('Hi', 'Hi', 'admin', 0)`);
+//db.query(`INSERT INTO posts (title, body, user, privacy) VALUES ('Hi', 'Hi', 'admin', FALSE)`);
 
 const router = new Router();
 
@@ -55,7 +55,7 @@ async function redirectTo(ctx) {
 
 async function list(ctx) {
   const user = ctx.params.user;
-  let posts = query(`SELECT id, title, body, user, timestamp FROM posts WHERE (user = '${user}' OR privacy = 0) AND title != 'config'`)
+  let posts = query(`SELECT id, title, body, user, timestamp FROM posts WHERE (user = '${user}' OR privacy = FALSE) AND title != 'config'`)
   console.log('list:posts=', posts)
   ctx.response.body = await render.list(posts,user);
 }
@@ -91,14 +91,7 @@ async function create(ctx) {
       post[key] = value
     }
     console.log('create:post=', post)
-    let pravicy = 1
-    if (post.privacy) {
-      pravicy = 1
-    }
-    else {
-      pravicy = 0
-    }
-    db.query("INSERT INTO posts (title, body, user, privacy) VALUES (?, ?, ?, ?)", [post.title, post.body, user , pravicy]);
+    db.query("INSERT INTO posts (title, body, user, privacy) VALUES (?, ?, ?, ?)", [post.title, post.body, user , post.pravicy]);
     ctx.response.redirect(`/${user}/list/`);
   }
 }
