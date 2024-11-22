@@ -1,0 +1,51 @@
+body {
+    font-family: Microsoft JhengHei;
+}
+#titleh1 {
+    margin-left: 10px;
+}
+.navigationbar {
+    list-style-type: none;
+    margin: 10px;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+}
+.navigationbar li {
+    display: inline;
+}
+.navigationbar li a {
+    display: inline-block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+.userinfo {
+    float: right;
+}
+.posts {
+    margin: 10px;
+    padding: 10px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+.usertime {
+    font-size: 12px;
+    color: gray;
+}
+.add {
+    overflow:hidden;
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    width: 75px;
+    height: 60px;
+    background-color: black;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+.add p{
+    font-size: 20px;
+    text-align: center;
+    color: white;
+    margin: 16px;
+}
