@@ -1,6 +1,5 @@
 var socket = new WebSocket("ws://" + window.location.hostname + ":8080")
 var domParser = new DOMParser()
-var user
 
 // 參考 -- https://davidwalsh.name/convert-html-stings-dom-nodes
 function html2node(html) {
@@ -28,11 +27,19 @@ function submitform() {
     sendcounter = 0
     console.log('submitform()...') 
     user = document.querySelector('#username').value
+    nickname = document.querySelector('#nickname').value
     password = document.querySelector('#password').value
-    console.log(user, ":", password) //remove before release
-    send({type:'login', user: user, password: password})
+    passwordagain = document.querySelector('#password2').value
+    if (password != passwordagain){
+        document.querySelector('#errormsg').innerHTML = 'Password not match'
+        return
+    }
+    console.log(user, ":", password, ':', nickname) //remove before release
+    send({type:'register', user: user, password: password, nickname: nickname})
     document.querySelector('#password').value = ''
     document.querySelector('#username').value = ''
+    document.querySelector('#nickname').value = ''
+    document.querySelector('#password2').value = ''
 }
 
 socket.onopen = function (event) { console.log('socket:onopen()...') }
@@ -44,11 +51,10 @@ socket.onmessage = function (event) {
     switch (msg.type){
         case 'info':
             switch (msg.where){
-                case 'login':
+                case 'register':
                     switch (msg.statusinfo){
                         case 'success':
-                            console.log('login success')
-                            window.location.href = `/main.html`
+                            console.log('register success')
                             break
                         default:
                             document.querySelector('#errormsg').innerHTML = msg.statusinfo

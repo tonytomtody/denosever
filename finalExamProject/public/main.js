@@ -1,6 +1,5 @@
 var socket = new WebSocket("ws://" + window.location.hostname + ":8080")
 var domParser = new DOMParser()
-var user
 
 // 參考 -- https://davidwalsh.name/convert-html-stings-dom-nodes
 function html2node(html) {
@@ -44,14 +43,13 @@ socket.onmessage = function (event) {
     switch (msg.type){
         case 'info':
             switch (msg.where){
-                case 'login':
+                case 'main':
                     switch (msg.statusinfo){
                         case 'success':
                             console.log('login success')
-                            window.location.href = `/main.html`
                             break
                         default:
-                            document.querySelector('#errormsg').innerHTML = msg.statusinfo
+                            console.log(msg.statusinfo);
                             break
                     }
             }
