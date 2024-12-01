@@ -1,4 +1,4 @@
-body {
+body{
     font-family: Microsoft JhengHei;
 }
 #titleh1 {
@@ -48,4 +48,51 @@ body {
     text-align: center;
     color: white;
     margin: 16px;
+}
+.addpost{
+    display: none;
+    position: fixed;
+    margin:auto;
+    margin-top: 30%;
+    padding: 10px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    width: 50%;
+    bottom: 30%;
+    left: 25%;
+    background-color: white;
+    opacity: 0.9;
+}
+.addpost form{
+    display:grid
+}
+.addpost input{
+    margin: 10px;
+    padding: 10px;
+    border: 1px solid black;
+}
+.addpost textarea{
+    margin: 10px;
+    padding: 10px;
+    height: 200%;
+    border: 1px solid black;
+}
+#submitbutton{
+    margin-top: 30%;
+    border: 1px solid black;
+    background-color: black;
+    color: white;
+}
+#cancelbutton{
+    border: 1px solid black;
+    background-color: white;
+    color: black;
+}
+.addpost button{
+    margin: 10px;
+    padding: 10px;
+    width: 44.6%;
+}
+.addpost p{
+    margin: 10px;
+    font-weight: bold;
 }

@@ -6,11 +6,12 @@
         <link rel="stylesheet" href="main.css">
     </head>
     <body>
+        <script src="main.js"></script>
         <h1 id = "titleh1">Blog</h1>
         <ul class = "navigationbar">
             <li><a onclick="">貼文</a></li>
             <li><a onclick="">聊天</a></li>
-            <li><a onclick="" class="userinfo">登出</a></li>
+            <li><a onclick="logout()" class="userinfo">登出</a></li>
             <li><a onclick="" id = "username" class="userinfo"></a></li>
         </ul>
         <div id = "post" class="posts">
@@ -20,6 +21,21 @@
         </div>
         <div class="add">
             <p>+</p>
+        </div>
+        <div class="addpost">
+            <form onsubmit="return false;">
+                <p>新增貼文</p>
+                <div>
+                    <input type="checkbox" id="privacy" checked>
+                    <label>私人</label>    
+                </div>
+                <input type="text" id="posttitle" placeholder="輸入標題">
+                <textarea id="postcontent" placeholder="輸入內容"></textarea>
+                <div>
+                    <button id="cancelbutton" onclick="">取消</button>
+                    <button id="submitbutton" onclick="submitpost()">發布</button>
+                </div>
+            </form>
         </div>
     </body>
 </html>
