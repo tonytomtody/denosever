@@ -26,7 +26,15 @@ body{
 }
 .login a{
     text-decoration: underline;
+    color: gray;
 }
 #errormsg{
     color: red;
+}
+.register{
+    display: inline-block;
+    margin: 10px;
+}
+hr{
+    margin: 10px;
 }

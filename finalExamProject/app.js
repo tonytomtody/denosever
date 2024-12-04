@@ -35,6 +35,9 @@ wss.on("connection", function (wsc) {
 			case 'register':
 				register(message.user, message.password, message.nickname, wsc);
 				break;
+			case 'reset':
+				reset(message.user, message.password, message.nickname, wsc);
+				break;
 			case 'changeHTML':
 				switch (message.to) {
 					case 'login':
@@ -43,13 +46,19 @@ wss.on("connection", function (wsc) {
 					case 'register':
 						goRegister(wsc);
 						break;
+					case 'reset':
+						goReset(wsc);
+						break;
+					case 'main':
+						goMain(message.user, message.password, wsc);
+						break;
 					default:
 						goLogin(wsc);
 						break;
 				}
 				break;
 			case 'addpost':
-				addposts(message.title, message.body, message.user, message.privacy, wsc);
+				addposts(message.title, message.body, message.user, message.privacy, message.password, wsc);
 				break;
 			default:
 				console.log('request not found');
@@ -61,7 +70,12 @@ wss.on("connection", function (wsc) {
 function register(user, password, nickname, wsc) {
 	console.log('register()...');
 	var sqldata = [];
-	if (user.length == 0 || password.length == 0 || nickname.length == 0) {
+	if (user.length >= 26 || password.length >= 26 || nickname.length >= 26) {
+		console.log('input too long');
+		wsc.send(JSON.stringify({ type: 'info', where: 'register', statusinfo: 'input too long' }));
+		return;
+	}
+	else if (user.length == 0 || password.length == 0 || nickname.length == 0) {
 		console.log('empty input');
 		wsc.send(JSON.stringify({ type: 'info', where: 'register', statusinfo: 'empty input' }));
 		return;
@@ -95,6 +109,16 @@ function register(user, password, nickname, wsc) {
 
 async function login(user, password, wsc) {
 	let sqldata = [];
+	if (user.length >= 26 || password.length >= 26) {
+		console.log('input too long');
+		wsc.send(JSON.stringify({ type: 'info', where: 'login', statusinfo: 'input too long' }));
+		return;
+	}
+	else if (user.length == 0 || password.length == 0){
+		console.log('empty input');
+		wsc.send(JSON.stringify({ type: 'info', where: 'login', statusinfo: 'empty input' }));
+		return;
+	}
 	try {
 		sqldata = await db.query("SELECT password FROM users WHERE acount = ?", [user]);
 		console.log(sqldata);
@@ -120,6 +144,47 @@ async function login(user, password, wsc) {
 	console.log('login()...end'); //remove before release
 }
 
+function reset(user, password, nickname, wsc) {
+	console.log('reset()...');
+	var sqldata = [];
+	if (user.length >= 26 || password.length >= 26 || nickname.length >= 26) {
+		console.log('input too long');
+		wsc.send(JSON.stringify({ type: 'info', where: 'reset', statusinfo: 'input too long' }));
+		return;
+	}
+	else if (user.length == 0 || password.length == 0 || nickname.length == 0) {
+		console.log('empty input');
+		wsc.send(JSON.stringify({ type: 'info', where: 'reset', statusinfo: 'empty input' }));
+		return;
+	}
+	try {
+		sqldata = db.query("SELECT * FROM users WHERE acount = ? AND nickname = ?", [user,nickname]);
+		console.log(sqldata);
+	}
+	catch (e) {
+		console.log('Error:', e);
+		wsc.send(JSON.stringify({ type: 'info', where: 'reset', statusinfo: 'internal error' }));
+	}
+	if (sqldata.length == 0) {
+		wsc.send(JSON.stringify({ type: 'info', where: 'reset', statusinfo: 'User not found' }));
+		return;
+	}
+	else {
+		console.log('User found');
+		try {
+			db.query("UPDATE users SET password = ? WHERE acount = ?", [password, user]);
+			console.log('reset success');
+			wsc.send(JSON.stringify({ type: 'info', where: 'unknown', statusinfo: 'goLogin' }));
+			wsc.send(JSON.stringify({ type: 'info', where: 'reset', statusinfo: 'success'}));
+		}
+		catch (e) {
+			console.log('Error:', e);
+			wsc.send(JSON.stringify({ type: 'info', where: 'reset', statusinfo: 'internal error' }));
+		}
+	}
+	console.log('reset()...end');
+}
+
 function goLogin(wsc) {
 	console.log('goLogin()...');
 	wsc.send(JSON.stringify({ type: 'info', where: 'unknown', statusinfo: 'goLogin' }));
@@ -130,6 +195,26 @@ function goRegister(wsc) {
 	console.log('goRegister()...');
 	wsc.send(JSON.stringify({ type: 'info', where: 'unknown', statusinfo: 'goRegister' }));
 	console.log('goRegister()...end');
+}
+
+function goReset(wsc) {
+	console.log('goReset()...');
+	wsc.send(JSON.stringify({ type: 'info', where: 'unknown', statusinfo: 'goReset' }));
+	console.log('goReset()...end');
+}
+
+function goMain(user, password, wsc){
+	console.log('goMain()...');
+	if (!checkpassword(user, password)) {
+		wsc.send(JSON.stringify({ type: 'info', where: 'unknown', statusinfo: 'goLogin' }));
+		console.log("check failed");
+		return;
+	}
+	else{
+		let posts = listpost(user);
+		wsc.send(JSON.stringify({ type: 'info', where: 'unknown', statusinfo: 'goMain', posts: posts }));
+	}
+	console.log('goMain()...end');
 }
 
 function listpost(user){
@@ -151,15 +236,30 @@ function listpost(user){
 	return posts;
 }
 
-async function addposts(title, body, user, privacy, wsc){
+async function addposts(title, body, user, privacy, password, wsc){
 	console.log('addposts()...');
-	let nickname;
-	console.log(title, body, user);
-	if (title.length == 0 || body.length == 0) {
-		wsc.send(JSON.stringify({ type: 'info', where: 'main', statusinfo: 'add post reject' }));
+	if (!checkpassword(user, password)) {
+		wsc.send(JSON.stringify({ type: 'info', where: 'unknown', statusinfo: 'goLogin' }));
+		console.log("wrong password");
+		return;
+	}
+	if (title.length >= 26 || body.length >= 260) {
+		wsc.send(JSON.stringify({ type: 'info', where: 'main', statusinfo: 'add post reject: input too long' }));
+		console.log("input too long");
+		return;
+	}
+	else if (title.length == 0 || body.length == 0) {
+		wsc.send(JSON.stringify({ type: 'info', where: 'main', statusinfo: 'add post reject: empty input' }));
 		console.log("empty input");
 		return;
 	}
+	else if (body.split('\n').length > 50) {
+		wsc.send(JSON.stringify({ type: 'info', where: 'main', statusinfo: 'add post reject: too many lines' }));
+		console.log("too many lines");
+		return;
+	}
+	let nickname;
+	console.log(title, body, user);
 	try{
 		nickname = await db.query("SELECT nickname FROM users WHERE acount = ?", [user]);
 	}
@@ -171,12 +271,43 @@ async function addposts(title, body, user, privacy, wsc){
 		console.log('addposts success');
 		let posts = await listpost(user);
 		wsc.send(JSON.stringify({ type: 'info', where: 'unknown', statusinfo: 'goMain', posts: posts }));
+		wsc.send(JSON.stringify({ type: 'info', where: 'main', statusinfo: 'add post success' }));
 	}
 	catch(e){
 		console.log('Error:', e);
 		wsc.send(JSON.stringify({ type: 'info', where: 'main', statusinfo: 'add post error' }));
 	}
 	console.log('addposts()...end');
+}
+
+function checkpassword(user, password){
+	console.log('checkpassword()...');
+	let sqldata = [];
+	if (user.length >= 26 || password.length >= 26) {
+		console.log('invalid input');
+		return false;
+	}
+	else if (user.length == 0 || password.length == 0) {
+		console.log('empty input');
+		return false;
+	}
+	try{
+		sqldata = db.query("SELECT id FROM users WHERE acount = ? AND password = ?", [user, password]);
+		console.log(sqldata);
+		console.log(sqldata.length);
+	}
+	catch(e){
+		console.log('Error:', e);
+		return false;
+	}
+	if(sqldata.length == 0){
+		console.log('checkpassword()...end');
+		return false;
+	}
+	else{
+		console.log('checkpassword()...end');
+		return true;
+	}
 }
 
 console.log('start at : http://127.0.0.1:8000')
