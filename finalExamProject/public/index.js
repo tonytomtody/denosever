@@ -111,7 +111,7 @@ function requestMain() {
 
 socket.onopen = function (event) {
     console.log('socket:onopen()...')
-    send({ type: 'changeHTML', where: 'unknown', to: 'login' })
+    setTimeout(requestLogin(), 1000)
 }
 socket.onerror = function (event) { console.log('socket:onerror()...') }
 socket.onclose = function (event) { console.log('socket:onclose()...') }
