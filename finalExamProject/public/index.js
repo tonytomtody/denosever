@@ -1,6 +1,6 @@
 var socket = new WebSocket("ws://" + window.location.hostname + ":8080")
 var domParser = new DOMParser()
-var user, password
+var user, password, nvb
 
 // 參考 -- https://davidwalsh.name/convert-html-stings-dom-nodes
 function html2node(html) {
@@ -165,18 +165,22 @@ socket.onmessage = function (event) {
                     switch (msg.statusinfo) {
                         case 'goLogin':
                             console.log(msg.statusinfo)
+                            navigationoff();
                             goLogin()
                             break
                         case 'goRegister':
                             console.log(msg.statusinfo)
+                            navigationoff()
                             goRegister()
                             break
                         case 'goMain':
                             console.log(msg.statusinfo)
+                            navigationbar();
                             goMain(msg.posts);
                             break
                         case 'goReset':
                             console.log(msg.statusinfo)
+                            navigationoff()
                             goReset()
                             break
                         default:
@@ -264,6 +268,32 @@ function goReset() {
     `
 }
 
+function navigationbar(){
+    if (nvb){
+        return
+    }
+    document.querySelector('#title').innerHTML = `
+    <link rel="stylesheet" href="main.css">
+    <h1 id = "titleh1">Blog</h1>
+    <ul class = "navigationbar">
+        <li><button onclick="requestMain()">貼文</button></li>
+        <li><button onclick="">聊天</button></li>
+        <li><button onclick="requestLogin()" class="userinfo">登出</button></li>
+        <li><button onclick="" id = "username" class="userinfo">${user}</button></li>
+    </ul>
+    `
+    nvb = true
+}
+
+function navigationoff(){
+    if (!nvb){
+        return
+    }
+    document.querySelector('#title').innerHTML = `
+    `
+    nvb = false
+}
+
 function goMain(posts) {
     let list = [];
     for (let post of posts) {
@@ -287,14 +317,6 @@ function goMain(posts) {
         `)
     }
     document.querySelector('#content').innerHTML = `
-    <link rel="stylesheet" href="main.css">
-    <h1 id = "titleh1">Blog</h1>
-    <ul class = "navigationbar">
-        <li><button onclick="requestMain()">貼文</button></li>
-        <li><button onclick="">聊天</button></li>
-        <li><button onclick="requestLogin()" class="userinfo">登出</button></li>
-        <li><button onclick="" id = "username" class="userinfo">${user}</button></li>
-    </ul>
     ${list.join('\n')}
     <div onclick="addposts()" class="add">
         <p>+</p>
