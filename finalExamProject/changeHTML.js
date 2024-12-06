@@ -18,8 +18,8 @@ export function goReset(wsc) {
 	console.log('goReset()...end');
 }
 
-export function goMain(user, password, wsc){
-	console.log('goMain()...');
+export function goPosts(user, password, wsc){
+	console.log('goPosts()...');
 	if (!checkpassword(user, password)) {
 		wsc.send(JSON.stringify({ type: 'info', where: 'unknown', statusinfo: 'goLogin' }));
 		console.log("check failed");
@@ -27,7 +27,7 @@ export function goMain(user, password, wsc){
 	}
 	else{
 		let posts = listpost(user);
-		wsc.send(JSON.stringify({ type: 'info', where: 'unknown', statusinfo: 'goMain', posts: posts }));
+		wsc.send(JSON.stringify({ type: 'info', where: 'unknown', statusinfo: 'goPosts', posts: posts }));
 	}
-	console.log('goMain()...end');
+	console.log('goPosts()...end');
 }

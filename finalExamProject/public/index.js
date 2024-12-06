@@ -105,8 +105,8 @@ function requestReset() {
     send({ type: 'changeHTML', where: 'unknown', to: 'reset' })
 }
 
-function requestMain() {
-    send({ type: 'changeHTML', where: 'unknown', to: 'main', user: user, password: password })
+function requestPosts() {
+    send({ type: 'changeHTML', where: 'unknown', to: 'posts', user: user, password: password })
 }
 
 socket.onopen = function (event) {
@@ -173,10 +173,10 @@ socket.onmessage = function (event) {
                             navigationoff()
                             goRegister()
                             break
-                        case 'goMain':
+                        case 'goPosts':
                             console.log(msg.statusinfo)
                             navigationbar();
-                            goMain(msg.posts);
+                            goPosts(msg.posts);
                             break
                         case 'goReset':
                             console.log(msg.statusinfo)
@@ -294,7 +294,7 @@ function navigationoff(){
     nvb = false
 }
 
-function goMain(posts) {
+function goPosts(posts) {
     let list = [];
     for (let post of posts) {
         console.log(post.body)

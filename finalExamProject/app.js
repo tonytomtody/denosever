@@ -44,8 +44,8 @@ wss.on("connection", function (wsc) {
 					case 'reset':
 						changeHTML.goReset(wsc);
 						break;
-					case 'main':
-						changeHTML.goMain(message.user, message.password, wsc);
+					case 'posts':
+						changeHTML.goPosts(message.user, message.password, wsc);
 						break;
 					default:
 						changeHTML.goLogin(wsc);

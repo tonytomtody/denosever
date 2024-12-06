@@ -72,7 +72,7 @@ export async function login(user, password, wsc) {
 	else if (sqldata[0] == password) {
 		console.log('login success');
 		let posts = await listpost(user);
-		wsc.send(JSON.stringify({ type: 'info', where: 'unknown', statusinfo: 'goMain', posts: posts }));
+		wsc.send(JSON.stringify({ type: 'info', where: 'unknown', statusinfo: 'goPosts', posts: posts }));
 	}
 	else {
 		console.log('login failed');
