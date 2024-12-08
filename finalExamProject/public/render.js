@@ -1,4 +1,4 @@
-export function goLogin() {
+function goLogin() {
     document.querySelector('#content').innerHTML = `
     <link rel="stylesheet" href="index.css">
     <div class = "login">
@@ -22,7 +22,7 @@ export function goLogin() {
     `
 }
 
-export function goRegister() {
+function goRegister() {
     document.querySelector('#content').innerHTML = `
     <link rel="stylesheet" href="index.css">
     <div class = "login">
@@ -48,7 +48,7 @@ export function goRegister() {
     `
 }
 
-export function goReset() {
+function goReset() {
     document.querySelector('#content').innerHTML = `
     <link rel="stylesheet" href="index.css">
     <div class = "login">
@@ -74,7 +74,32 @@ export function goReset() {
     `
 }
 
-export function goMain(posts) {
+function navigationbar(){
+    if (nvb){
+        return
+    }
+    document.querySelector('#title').innerHTML = `
+    <h1 id = "titleh1">Blog</h1>
+    <ul class = "navigationbar">
+        <li><button onclick="requestPosts()">貼文</button></li>
+        <li><button onclick="requestChat()">聊天</button></li>
+        <li><button onclick="requestLogin()" class="userinfo">登出</button></li>
+        <li><button onclick="" id = "username" class="userinfo">${user}</button></li>
+    </ul>
+    `
+    nvb = true
+}
+
+function navigationoff(){
+    if (!nvb){
+        return
+    }
+    document.querySelector('#title').innerHTML = `
+    `
+    nvb = false
+}
+
+function goPosts(posts) {
     let list = [];
     for (let post of posts) {
         console.log(post.body)
@@ -98,14 +123,32 @@ export function goMain(posts) {
     }
     document.querySelector('#content').innerHTML = `
     <link rel="stylesheet" href="main.css">
-    <h1 id = "titleh1">Blog</h1>
-    <ul class = "navigationbar">
-        <li><button onclick="requestMain()">貼文</button></li>
-        <li><button onclick="">聊天</button></li>
-        <li><button onclick="requestLogin()" class="userinfo">登出</button></li>
-        <li><button onclick="" id = "username" class="userinfo">${user}</button></li>
-    </ul>
     ${list.join('\n')}
+    `
+}
+
+function addChat(message,user){
+    if (user == '我'){
+        document.querySelector('#content').innerHTML += `
+        <div id = "chatbox-self">
+            <p>${user} : ${message}</p>
+        </div>
+        `
+    }
+    else {
+        document.querySelector('#content').innerHTML += `
+        <div id = "chatbox-other">
+            <p>${user} : ${message}</p>
+        </div>
+        `
+    }
+}
+
+function postsButton(){
+    if (ab){
+        return
+    }
+    document.querySelector('#bottom').innerHTML = `
     <div onclick="addposts()" class="add">
         <p>+</p>
     </div>
@@ -125,4 +168,43 @@ export function goMain(posts) {
         </form>
     </div>
     `
+    ab = true
+}
+
+function goChat(){
+    document.querySelector('#content').innerHTML = `
+    <link rel="stylesheet" href="chat.css">
+    `
+}
+
+function addchat(message,user){
+    if (user == 'me'){
+        document.querySelector('#content').innerHTML += `
+        <div id = "chatbox-self">
+            <p>我: ${message}</p>
+        </div>
+        `
+    }
+    else {
+        document.querySelector('#content').innerHTML += `
+        <div id = "chatbox-other">
+            <p>${user}:${message}</p>
+        </div>
+        `
+    }
+}
+
+function messageButton(){
+    if (mb){
+        return
+    }
+    document.querySelector('#bottom').innerHTML = `
+    <div id = "chatbar">
+        <form onsubmit="return false">
+            <input type="text" id="chatinput" placeholder="輸入訊息">
+            <button id="chatsubmit" onclick="submitchat()">送出</button>
+        </form>
+    </div>
+    `
+    mb = true
 }

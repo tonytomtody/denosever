@@ -31,3 +31,16 @@ export function goPosts(user, password, wsc){
 	}
 	console.log('goPosts()...end');
 }
+
+export function goChat(user, password, wsc){
+	console.log('goChat()...');
+	if (!checkpassword(user, password)) {
+		wsc.send(JSON.stringify({ type: 'info', where: 'unknown', statusinfo: 'goLogin' }));
+		console.log("check failed");
+		return;
+	}
+	else{
+		wsc.send(JSON.stringify({ type: 'info', where: 'unknown', statusinfo: 'goChat' }));
+	}
+	console.log('goChat()...end');
+}

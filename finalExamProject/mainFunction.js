@@ -149,17 +149,17 @@ export async function addposts(title, body, user, privacy, password, wsc){
 		return;
 	}
 	if (title.length >= 26 || body.length >= 260) {
-		wsc.send(JSON.stringify({ type: 'info', where: 'main', statusinfo: 'add post reject: input too long' }));
+		wsc.send(JSON.stringify({ type: 'info', where: 'posts', statusinfo: 'add post reject: input too long' }));
 		console.log("input too long");
 		return;
 	}
 	else if (title.length == 0 || body.length == 0) {
-		wsc.send(JSON.stringify({ type: 'info', where: 'main', statusinfo: 'add post reject: empty input' }));
+		wsc.send(JSON.stringify({ type: 'info', where: 'posts', statusinfo: 'add post reject: empty input' }));
 		console.log("empty input");
 		return;
 	}
 	else if (body.split('\n').length > 50) {
-		wsc.send(JSON.stringify({ type: 'info', where: 'main', statusinfo: 'add post reject: too many lines' }));
+		wsc.send(JSON.stringify({ type: 'info', where: 'posts', statusinfo: 'add post reject: too many lines' }));
 		console.log("too many lines");
 		return;
 	}
@@ -175,14 +175,52 @@ export async function addposts(title, body, user, privacy, password, wsc){
 		db.query("INSERT INTO posts (title, body, user, nickname, privacy) VALUES (?, ?, ?, ?, ?)", [title, body, user, nickname[0].toString(), privacy]);
 		console.log('addposts success');
 		let posts = await listpost(user);
-		wsc.send(JSON.stringify({ type: 'info', where: 'unknown', statusinfo: 'goMain', posts: posts }));
-		wsc.send(JSON.stringify({ type: 'info', where: 'main', statusinfo: 'add post success' }));
+		wsc.send(JSON.stringify({ type: 'info', where: 'unknown', statusinfo: 'goPosts', posts: posts }));
+		wsc.send(JSON.stringify({ type: 'info', where: 'posts', statusinfo: 'add post success' }));
 	}
 	catch(e){
 		console.log('Error:', e);
-		wsc.send(JSON.stringify({ type: 'info', where: 'main', statusinfo: 'add post error' }));
+		wsc.send(JSON.stringify({ type: 'info', where: 'posts', statusinfo: 'add post error' }));
 	}
 	console.log('addposts()...end');
+}
+
+export function addchat(message, user, password, wsc, wss){
+	console.log('addchat()...');
+	if (!checkpassword(user, password)) {
+		wsc.send(JSON.stringify({ type: 'info', where: 'unknown', statusinfo: 'goLogin' }));
+		console.log("wrong password");
+		return;
+	}
+	if (message.length >= 260) {
+		wsc.send(JSON.stringify({ type: 'info', where: 'chat', statusinfo: 'add chat reject: input too long' }));
+		console.log("input too long");
+		return;
+	}
+	else if (message.length == 0) {
+		wsc.send(JSON.stringify({ type: 'info', where: 'chat', statusinfo: 'add chat reject: empty input' }));
+		console.log("empty input");
+		return;
+	}
+	let nickname;
+	try{
+		nickname = db.query("SELECT nickname FROM users WHERE acount = ?", [user]);
+	}
+	catch(e){
+		console.log('Error:', e)
+	}
+	try {
+		wss.clients.forEach(function each(client) {
+		if (!client.isClosed && client !== wsc) {
+			client.send(JSON.stringify({ type: 'info', where: 'chat', statusinfo: 'new message', message: message, nickname: nickname[0].toString() }));
+		}
+	});
+	}
+	catch(e){
+		console.log('Error:', e);
+	}
+	wsc.send(JSON.stringify({ type: 'info', where: 'chat', statusinfo: 'success', message: message}));
+	console.log('addchat()...end');
 }
 
 export function checkpassword(user, password){

@@ -1,0 +1,79 @@
+body{
+    font-family: Microsoft JhengHei;
+}
+#titleh1 {
+    margin-left: 10px;
+}
+.navigationbar {
+    list-style-type: none;
+    margin: 10px;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+}
+.navigationbar button{
+    background-color: #333;
+    border: none;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+}
+.navigationbar li {
+    display: inline;
+}
+.navigationbar li a {
+    display: inline-block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+.userinfo {
+    float: right;
+}
+#chatbar {
+    position: fixed;
+    bottom: 10px;
+    right: 3%;
+    width: 90%;
+    margin: 10px;
+    padding: 10px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    opacity: 0.9;
+}
+#chatbar form{
+    display:inline;
+}
+#chatbar input{
+    padding: 10px;
+    width:90%;
+    border: 1px solid black;
+}
+#chatbar button{
+    padding: 10px;
+    border: 1px solid black;
+    background-color: black;
+    color: white;
+}
+#chatbox-other {
+    margin-left: 10px; 
+    margin-right: auto;
+    margin-bottom: 10px;
+    padding: 5px;
+    width: fit-content;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+#chatbox-self {
+    margin-left: auto; 
+    margin-right: 10px;
+    margin-bottom: 10px;
+    text-align: right;
+    width: fit-content;
+    padding: 5px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    background-color: gray;
+    color: white;
+}

@@ -47,6 +47,9 @@ wss.on("connection", function (wsc) {
 					case 'posts':
 						changeHTML.goPosts(message.user, message.password, wsc);
 						break;
+					case 'chat':
+						changeHTML.goChat(message.user, message.password, wsc);
+						break;
 					default:
 						changeHTML.goLogin(wsc);
 						break;
@@ -54,6 +57,9 @@ wss.on("connection", function (wsc) {
 				break;
 			case 'addpost':
 				mainFunction.addposts(message.title, message.body, message.user, message.privacy, message.password, wsc);
+				break;
+			case 'message':
+				mainFunction.addchat(message.message, message.user, message.password, wsc, wss);
 				break;
 			default:
 				console.log('request not found');
