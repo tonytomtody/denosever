@@ -55,10 +55,10 @@ function goReset() {
         <h1>Blog密碼重設</h1>
         <p1 id="errormsg"></p1>
         <form onsubmit="return false;">
-        <input type="text" id="username" placeholder="輸入帳號">
-        <input type="text" id="nickname" placeholder="輸入暱稱">
-        <input type="password" id="password" placeholder="輸入密碼">
-        <input type="password" id="password2" placeholder="再次輸入密碼">
+        <input type="text" id="username" placeholder="輸入帳號" maxlength="25">
+        <input type="text" id="nickname" placeholder="輸入暱稱" maxlength="25">
+        <input type="password" id="password" placeholder="輸入密碼" maxlength="25">
+        <input type="password" id="password2" placeholder="再次輸入密碼" maxlength="25">
         <button id="loginbutton" onclick="submitformreset()">重設</button>
         </form>
         <hr>
@@ -207,4 +207,11 @@ function messageButton(){
     </div>
     `
     mb = true
+}
+
+function bottomoff(){
+    document.querySelector('#bottom').innerHTML = `
+    `
+    ab = false
+    mb = false
 }

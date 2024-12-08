@@ -82,15 +82,13 @@ socket.onmessage = function (event) {
                             console.log(msg.statusinfo)
                             navigationoff();
                             goLogin()
-                            ab = false
-                            mb = false
+                            bottomoff()
                             break
                         case 'goRegister':
                             console.log(msg.statusinfo)
                             navigationoff()
                             goRegister()
-                            ab = false
-                            mb = false
+                            bottomoff()
                             break
                         case 'goPosts':
                             console.log(msg.statusinfo)
@@ -103,8 +101,7 @@ socket.onmessage = function (event) {
                             console.log(msg.statusinfo)
                             navigationoff()
                             goReset()
-                            ab = false
-                            mb = false
+                            bottomoff()
                             break
                         case 'goChat':
                             console.log(msg.statusinfo)

@@ -1,10 +1,11 @@
 import { DB } from "https://deno.land/x/sqlite/mod.ts";
+import { encodeHex } from "jsr:@std/encoding/hex";
 
 const db = new DB("blog.db");
 db.query("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, nickname TEXT, acount TEXT, password TEXT)");
 db.query("CREATE TABLE IF NOT EXISTS posts (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, body TEXT, user TEXT, nickname TEXT, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP, privacy BOOLEAN DEFAULT TRUE)");
 
-export function register(user, password, nickname, wsc) {
+export async function register(user, password, nickname, wsc) {
 	console.log('register()...');
 	var sqldata = [];
 	if (user.length >= 26 || password.length >= 26 || nickname.length >= 26) {
@@ -27,6 +28,7 @@ export function register(user, password, nickname, wsc) {
 	}
 	if (sqldata.length == 0) {
 		try {
+			password = await hashconvert(password);
 			db.query("INSERT INTO users (nickname, acount, password) VALUES (?, ?, ?)", [nickname, user, password]);
 			console.log('register success');
 			wsc.send(JSON.stringify({ type: 'info', where: 'unknown', statusinfo: 'goLogin' }));
@@ -69,7 +71,7 @@ export async function login(user, password, wsc) {
 		console.log('data not found');
 		wsc.send(JSON.stringify({ type: 'info', where: 'login', statusinfo: 'Wrong User or Password' }));
 	}
-	else if (sqldata[0] == password) {
+	else if (sqldata[0] == await hashconvert(password)) {
 		console.log('login success');
 		let posts = await listpost(user);
 		wsc.send(JSON.stringify({ type: 'info', where: 'unknown', statusinfo: 'goPosts', posts: posts }));
@@ -81,7 +83,7 @@ export async function login(user, password, wsc) {
 	console.log('login()...end'); //remove before release
 }
 
-export function reset(user, password, nickname, wsc) {
+export async function reset(user, password, nickname, wsc) {
 	console.log('reset()...');
 	var sqldata = [];
 	if (user.length >= 26 || password.length >= 26 || nickname.length >= 26) {
@@ -109,6 +111,7 @@ export function reset(user, password, nickname, wsc) {
 	else {
 		console.log('User found');
 		try {
+			password = await hashconvert(password);
 			db.query("UPDATE users SET password = ? WHERE acount = ?", [password, user]);
 			console.log('reset success');
 			wsc.send(JSON.stringify({ type: 'info', where: 'unknown', statusinfo: 'goLogin' }));
@@ -223,7 +226,7 @@ export function addchat(message, user, password, wsc, wss){
 	console.log('addchat()...end');
 }
 
-export function checkpassword(user, password){
+export async function checkpassword(user, password){
 	console.log('checkpassword()...');
 	let sqldata = [];
 	if (user.length >= 26 || password.length >= 26) {
@@ -235,6 +238,7 @@ export function checkpassword(user, password){
 		return false;
 	}
 	try{
+		password = await hashconvert(password);
 		sqldata = db.query("SELECT id FROM users WHERE acount = ? AND password = ?", [user, password]);
 		console.log(sqldata);
 		console.log(sqldata.length);
@@ -251,4 +255,13 @@ export function checkpassword(user, password){
 		console.log('checkpassword()...end');
 		return true;
 	}
+}
+
+async function hashconvert(password){
+	console.log('hashconvert()...');
+	let passwordtemp = new TextEncoder().encode(password);
+	let hashtemp = await crypto.subtle.digest("SHA-256", passwordtemp);
+	let hash = encodeHex(hashtemp);
+	console.log('hashconvert()...end');
+	return hash;
 }
