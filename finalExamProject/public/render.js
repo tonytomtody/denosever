@@ -1,4 +1,7 @@
 function goLogin() {
+    document.querySelector('#bigtitle').innerHTML = `
+    Blog - 登入
+    `
     document.querySelector('#content').innerHTML = `
     <link rel="stylesheet" href="index.css">
     <div class = "login">
@@ -23,6 +26,9 @@ function goLogin() {
 }
 
 function goRegister() {
+    document.querySelector('#bigtitle').innerHTML = `
+    Blog - 註冊
+    `
     document.querySelector('#content').innerHTML = `
     <link rel="stylesheet" href="index.css">
     <div class = "login">
@@ -49,6 +55,9 @@ function goRegister() {
 }
 
 function goReset() {
+    document.querySelector('#bigtitle').innerHTML = `
+    Blog - 重設密碼
+    `
     document.querySelector('#content').innerHTML = `
     <link rel="stylesheet" href="index.css">
     <div class = "login">
@@ -148,6 +157,9 @@ function postsButton(){
     if (ab){
         return
     }
+    document.querySelector('#bigtitle').innerHTML = `
+    Blog - 貼文
+    `
     document.querySelector('#bottom').innerHTML = `
     <div onclick="addposts()" class="add">
         <p>+</p>
@@ -181,14 +193,14 @@ function addchat(message,user){
     if (user == 'me'){
         document.querySelector('#content').innerHTML += `
         <div id = "chatbox-self">
-            <p>我: ${message}</p>
+            <p>我 : ${message}</p>
         </div>
         `
     }
     else {
         document.querySelector('#content').innerHTML += `
         <div id = "chatbox-other">
-            <p>${user}:${message}</p>
+            <p>${user} : ${message}</p>
         </div>
         `
     }
@@ -198,6 +210,9 @@ function messageButton(){
     if (mb){
         return
     }
+    document.querySelector('#bigtitle').innerHTML = `
+    Blog - 聊天
+    `
     document.querySelector('#bottom').innerHTML = `
     <div id = "chatbar">
         <form onsubmit="return false">

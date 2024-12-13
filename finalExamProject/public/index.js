@@ -61,6 +61,9 @@ socket.onmessage = function (event) {
                     }
                     break;
                 case 'chat':
+                    if (!mb){
+                        break
+                    }
                     switch (msg.statusinfo) {
                         case 'success':
                             console.log('chat success')
