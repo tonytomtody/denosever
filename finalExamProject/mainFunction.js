@@ -146,7 +146,7 @@ export function listpost(user){
 
 export async function addposts(title, body, user, privacy, password, wsc){
 	console.log('addposts()...');
-	if (!checkpassword(user, password)) {
+	if (!await checkpassword(user, password)) {
 		wsc.send(JSON.stringify({ type: 'info', where: 'unknown', statusinfo: 'goLogin' }));
 		console.log("wrong password");
 		return;
@@ -188,9 +188,9 @@ export async function addposts(title, body, user, privacy, password, wsc){
 	console.log('addposts()...end');
 }
 
-export function addchat(message, user, password, wsc, wss){
+export async function addchat(message, user, password, wsc, wss){
 	console.log('addchat()...');
-	if (!checkpassword(user, password)) {
+	if (!await checkpassword(user, password)) {
 		wsc.send(JSON.stringify({ type: 'info', where: 'unknown', statusinfo: 'goLogin' }));
 		console.log("wrong password");
 		return;

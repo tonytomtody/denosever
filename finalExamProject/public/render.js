@@ -90,8 +90,8 @@ function navigationbar(){
     document.querySelector('#title').innerHTML = `
     <h1 id = "titleh1">Blog</h1>
     <ul class = "navigationbar">
-        <li><button onclick="requestPosts()">貼文</button></li>
-        <li><button onclick="requestChat()">聊天</button></li>
+        <li><button onclick="requestPosts()" id="postButton">貼文</button></li>
+        <li><button onclick="requestChat()" id="chatButton">聊天</button></li>
         <li><button onclick="requestLogin()" class="userinfo">登出</button></li>
         <li><button onclick="" id = "username" class="userinfo">${user}</button></li>
     </ul>
@@ -115,6 +115,7 @@ function goPosts(posts) {
         let body = post.body.split('\n')
         let p = '';
         for (part of body){
+            part = part.replace(' ', "&ensp;")
             if (part.length > 0){
                 p += `<p>${part}</p>`
             }
@@ -157,6 +158,8 @@ function postsButton(){
     if (ab){
         return
     }
+    document.querySelector('#postButton').style.backgroundColor = 'rgb(90, 90, 90)'
+    document.querySelector('#chatButton').style.backgroundColor = '#333'
     document.querySelector('#bigtitle').innerHTML = `
     Blog - 貼文
     `
@@ -210,6 +213,8 @@ function messageButton(){
     if (mb){
         return
     }
+    document.querySelector('#chatButton').style.backgroundColor = 'rgb(90, 90, 90)'
+    document.querySelector('#postButton').style.backgroundColor = '#333'
     document.querySelector('#bigtitle').innerHTML = `
     Blog - 聊天
     `
